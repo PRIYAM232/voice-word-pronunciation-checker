@@ -1,1 +1,2 @@
 
+I want to build an application that records voice of a person and then compares it with a list of target words. Then the app should tell how many words did the person  pronounced correctly. The app should also take the target list of words as an input from the user. In the final output, I want the application to show the target word list, the correctly spoken words, the incorrectly spoken words, the numer of words that were spoken correctly along with the total number of target words.

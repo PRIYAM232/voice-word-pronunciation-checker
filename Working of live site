@@ -1,0 +1,172 @@
+🌐 How GitHub Pages Works
+Static File Hosting:
+GitHub Pages is a static file hosting service. It works like this:
+
+Your HTML file (voice_checker_web.html) is stored on GitHub's servers
+When someone visits your URL, GitHub sends the HTML file to their browser
+The browser downloads and displays the file
+All processing happens in the user's browser - not on GitHub's servers
+
+┌─────────────────────────────────────────────────────────────┐
+│  GitHub Pages (Static Hosting)                              │
+│  - Just stores and serves the HTML file                     │
+│  - No server-side processing                                │
+│  - Like a file storage + delivery service                   │
+└─────────────────────────────────────────────────────────────┘
+                           │
+                           │ Sends HTML file
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│  User's Browser (Chrome/Edge/Safari)                        │
+│  ✅ Runs JavaScript code                                    │
+│  ✅ Accesses microphone                                     │
+│  ✅ Processes audio                                         │
+│  ✅ Displays results                                        │
+└─────────────────────────────────────────────────────────────┘
+🎤 Where Each Part is Processed:
+1. File Delivery (GitHub's Servers):
+GitHub Pages → Sends HTML file → User's browser
+GitHub only stores and delivers the file
+No computation happens on GitHub
+2. User Interface (User's Browser):
+// Runs in the browser
+- Displays the form
+- Handles button clicks
+- Shows results
+3. Microphone Access (User's Device):
+// Browser API
+navigator.mediaDevices.getUserMedia()
+- Accesses user's microphone
+- Captures audio locally
+- No audio sent to GitHub
+4. Speech Recognition (Google's Servers):
+// Web Speech API
+const recognition = new webkitSpeechRecognition();
+This is the key part! When you speak:
+
+Browser captures audio from microphone
+Browser sends audio to Google's Speech Recognition API
+Google's servers process the audio and return text
+Browser receives the text and displays it
+User speaks → Browser captures audio → Sends to Google API
+                                              ↓
+User sees results ← Browser processes ← Google returns text
+5. Word Comparison (User's Browser):
+// JavaScript running in browser
+function similarityScore(word1, word2) {
+  // Levenshtein distance algorithm
+  // Runs entirely in the browser
+}
+All comparison logic runs locally
+No data sent anywhere for this part
+📊 Complete Data Flow:
+┌──────────────────────────────────────────────────────────────┐
+│ 1. User visits your URL                                      │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 2. GitHub Pages sends HTML file to browser                   │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 3. Browser displays the webpage                              │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 4. User enters words and clicks "Start Recording"           │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 5. Browser requests microphone access                       │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 6. User speaks into microphone                              │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 7. Browser sends audio to Google's Speech API               │
+│    (via HTTPS - encrypted connection)                        │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 8. Google's AI processes audio and returns text             │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 9. Browser runs comparison algorithm locally                 │
+└──────────────────────────────────────────────────────────────┘
+                        ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 10. Browser displays results to user                         │
+└──────────────────────────────────────────────────────────────┘
+🔒 Privacy & Security:
+What GitHub Sees:
+❌ No audio data
+❌ No spoken words
+❌ No user input
+✅ Only file download requests (who visits the page)
+What Google Sees:
+✅ Audio data (for transcription)
+✅ Spoken words
+❌ No personal information (unless you speak it)
+What Stays Local:
+✅ Target words entered
+✅ Comparison results
+✅ All calculations
+💻 Technical Architecture:
+┌─────────────────────────────────────────────────────────────┐
+│                    YOUR APPLICATION                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Frontend (Client-Side Only)                                │
+│  ├── HTML/CSS (UI)          → Runs in browser              │
+│  ├── JavaScript (Logic)     → Runs in browser              │
+│  └── Web Speech API         → Calls Google's API           │
+│                                                              │
+│  No Backend Server Needed!                                  │
+│  No Database!                                               │
+│  No Server-Side Code!                                       │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+
+External Services Used:
+├── GitHub Pages      → File hosting/delivery
+└── Google Speech API → Audio-to-text conversion
+🎯 Why This Works:
+Static Site = Fast & Free
+
+No server costs
+No maintenance
+Instant loading
+Scales automatically
+Client-Side Processing = Privacy
+
+Most logic runs locally
+No data stored on servers
+User controls their data
+Web Speech API = No Setup
+
+Built into browsers
+Free to use
+Professional-grade accuracy
+🆚 Comparison:
+Your App (Client-Side):
+User → Browser (processing) → Google API → Browser → Results
+         ↑                                    ↑
+    Microphone                          Display
+Traditional Server App:
+User → Browser → Your Server → Google API → Your Server → Browser → Results
+                     ↑                          ↑
+                 Processing                  Database
+                 (costs $)                  (costs $)
+Your approach is simpler, cheaper, and more private! ✅
+
+🚀 Key Takeaway:
+Your site is a client-side web application:
+
+GitHub = Storage only (like Google Drive)
+Browser = Does all the work
+Google = Speech recognition service
+No server needed!
+This is called a "serverless" or "static" web app - it's modern, efficient, and cost-effective! 🎉

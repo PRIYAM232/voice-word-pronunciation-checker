@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Word Pronunciation Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .recording {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .status-info {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+        
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+        
+        .result-value {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .word-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .word-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .word-correct {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .word-incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .word-neutral {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .help-text {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .note {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7d6608;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Voice Word Pronunciation Checker</h1>
+        <p class="subtitle">Web-based version - No installation required!</p>
+        
+        <div class="section">
+            <div class="section-title">1️⃣ Enter Target Words</div>
+            <input type="text" id="targetWords" placeholder="Enter words separated by commas (e.g., apple, banana, orange)">
+            <div class="help-text">Type the words you want to practice pronouncing</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">2️⃣ Record Your Voice</div>
+            <button id="recordBtn" class="btn btn-primary">🎙️ Start Recording</button>
+            <div id="status"></div>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="result-item">
+                <div class="result-label">📋 Target Words:</div>
+                <div class="result-value">
+                    <div class="word-list" id="targetWordsList"></div>
+                </div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">🎤 You Said:</div>
+                <div class="result-value" id="transcription"></div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">✅ Correctly Spoken:</div>
+                <div class="result-value">
+                    <div class="word-list" id="correctWords"></div>
+                </div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">❌ Incorrectly Spoken / Missing:</div>
+                <div class="result-value">
+                    <div class="word-list" id="incorrectWords"></div>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="correctCount">0</div>
+                    <div class="stat-label">Correct Words</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="accuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+            
+            <button id="tryAgainBtn" class="btn btn-success">🔄 Try Again</button>
+        </div>
+        
+        <div class="note">
+            <strong>⚠️ Note:</strong> This web version uses your browser's built-in speech recognition. 
+            Make sure you're using Chrome, Edge, or Safari, and grant microphone permissions when prompted.
+        </div>
+    </div>
+    
+    <script>
+        const recordBtn = document.getElementById('recordBtn');
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        const targetWordsInput = document.getElementById('targetWords');
+        const tryAgainBtn = document.getElementById('tryAgainBtn');
+        
+        let recognition;
+        let isRecording = false;
+        
+        // Check if browser supports speech recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+        } else {
+            statusDiv.innerHTML = '<div class="status status-error">❌ Speech recognition not supported in this browser. Please use Chrome, Edge, or Safari.</div>';
+            recordBtn.disabled = true;
+        }
+        
+        recordBtn.addEventListener('click', startRecording);
+        tryAgainBtn.addEventListener('click', resetApp);
+        
+        function startRecording() {
+            const targetWords = targetWordsInput.value.trim();
+            
+            if (!targetWords) {
+                statusDiv.innerHTML = '<div class="status status-error">❌ Please enter target words first!</div>';
+                return;
+            }
+            
+            recordBtn.disabled = true;
+            recordBtn.classList.add('recording');
+            recordBtn.textContent = '🎙️ Recording... Speak now!';
+            isRecording = true;
+            
+            statusDiv.innerHTML = '<div class="status status-info">🎤 Listening... Speak your words clearly!</div>';
+            
+            recognition.start();
+        }
+        
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            processResults(transcript);
+        };
+        
+        recognition.onerror = function(event) {
+            recordBtn.disabled = false;
+            recordBtn.classList.remove('recording');
+            recordBtn.textContent = '🎙️ Start Recording';
+            isRecording = false;
+            
+            let errorMessage = 'Error occurred during recognition';
+            if (event.error === 'no-speech') {
+                errorMessage = 'No speech detected. Please try again.';
+            } else if (event.error === 'not-allowed') {
+                errorMessage = 'Microphone permission denied. Please allow microphone access.';
+            }
+            
+            statusDiv.innerHTML = `<div class="status status-error">❌ ${errorMessage}</div>`;
+        };
+        
+        recognition.onend = function() {
+            recordBtn.disabled = false;
+            recordBtn.classList.remove('recording');
+            recordBtn.textContent = '🎙️ Start Recording';
+            isRecording = false;
+        };
+        
+        function similarityScore(str1, str2) {
+            str1 = str1.toLowerCase();
+            str2 = str2.toLowerCase();
+            
+            const longer = str1.length > str2.length ? str1 : str2;
+            const shorter = str1.length > str2.length ? str2 : str1;
+            
+            if (longer.length === 0) return 1.0;
+            
+            const editDistance = levenshteinDistance(longer, shorter);
+            return (longer.length - editDistance) / longer.length;
+        }
+        
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            
+            return matrix[str2.length][str1.length];
+        }
+        
+        function processResults(transcript) {
+            statusDiv.innerHTML = '<div class="status status-success">✅ Processing results...</div>';
+            
+            const targetWords = targetWordsInput.value.trim().split(',').map(w => w.trim().toLowerCase());
+            const spokenWords = transcript.toLowerCase().split(' ').filter(w => w.length > 0);
+            
+            const correctWords = [];
+            const incorrectWords = [];
+            const matchedSpokenIndices = new Set();
+            
+            targetWords.forEach(targetWord => {
+                let bestMatch = -1;
+                let bestScore = 0;
+                
+                spokenWords.forEach((spokenWord, idx) => {
+                    if (matchedSpokenIndices.has(idx)) return;
+                    
+                    const score = similarityScore(targetWord, spokenWord);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMatch = idx;
+                    }
+                });
+                
+                if (bestScore >= 0.8) {
+                    correctWords.push(targetWord);
+                    if (bestMatch !== -1) {
+                        matchedSpokenIndices.add(bestMatch);
+                    }
+                } else {
+                    incorrectWords.push(targetWord);
+                }
+            });
+            
+            displayResults(targetWords, transcript, correctWords, incorrectWords);
+        }
+        
+        function displayResults(targetWords, transcript, correctWords, incorrectWords) {
+            // Show results section
+            resultsDiv.classList.add('show');
+            
+            // Target words
+            document.getElementById('targetWordsList').innerHTML = 
+                targetWords.map(w => `<span class="word-badge word-neutral">${w}</span>`).join('');
+            
+            // Transcription
+            document.getElementById('transcription').textContent = transcript;
+            
+            // Correct words
+            document.getElementById('correctWords').innerHTML = 
+                correctWords.length > 0 
+                    ? correctWords.map(w => `<span class="word-badge word-correct">✓ ${w}</span>`).join('')
+                    : '<span style="color: #718096;">None</span>';
+            
+            // Incorrect words
+            document.getElementById('incorrectWords').innerHTML = 
+                incorrectWords.length > 0 
+                    ? incorrectWords.map(w => `<span class="word-badge word-incorrect">✗ ${w}</span>`).join('')
+                    : '<span style="color: #718096;">None</span>';
+            
+            // Stats
+            const correctCount = correctWords.length;
+            const totalWords = targetWords.length;
+            const accuracy = totalWords > 0 ? ((correctCount / totalWords) * 100).toFixed(1) : 0;
+            
+            document.getElementById('correctCount').textContent = `${correctCount}/${totalWords}`;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            
+            statusDiv.innerHTML = '<div class="status status-success">✅ Analysis complete!</div>';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function resetApp() {
+            resultsDiv.classList.remove('show');
+            statusDiv.innerHTML = '';
+            targetWordsInput.value = '';
+            targetWordsInput.focus();
+        }
+    </script>
+</body>
+</html>
